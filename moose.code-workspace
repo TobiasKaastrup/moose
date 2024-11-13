@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../bow"
+		},
+		{
+			"path": "../../Documents/Processing/exdipexam-proto3"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "moose"
+	}
+}
