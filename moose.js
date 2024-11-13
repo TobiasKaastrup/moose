@@ -28,15 +28,15 @@ let ampMeter = 0;
 let totalAcello = 0;
 
 function preload(){
-  img = loadImage('forest.jpg');
-  mooseImg = loadImage('moose.png');
-  forestAudio = loadSound('nature.mp3');
-  footstepsAudio = loadSound('footsteps.mp3');
-  aim = loadImage('aim.png')
-  arrow = loadSound('arrow.wav');
-  mooseDead = loadSound("mooseDead.wav")
-  deadImg = loadImage('dead.png')
-  backgroundAudio = loadSound('huntSoundScape.mp3')
+  img = loadImage('assets/forest.jpg');
+  mooseImg = loadImage('assets/moose.png');
+  forestAudio = loadSound('assets/nature.mp3');
+  footstepsAudio = loadSound('assets/footsteps.mp3');
+  aim = loadImage('assets/aim.png')
+  arrow = loadSound('assets/arrow.wav');
+  mooseDead = loadSound("assets/mooseDead.wav")
+  deadImg = loadImage('assets/dead.png')
+  backgroundAudio = loadSound('assets/huntSoundScape.mp3')
 }
 
 
