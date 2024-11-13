@@ -7,8 +7,8 @@ let mappedY = 0;
 let ima;
 let mooseX = 200;
 let mooseY = 200;
-let mooseWidth = 140;
-let mooseHeight = 140;
+let mooseWidth = 180;
+let mooseHeight = 180;
 let mooseImg;
 let xOff = 0;
 let yOff = 1000;
@@ -121,7 +121,7 @@ function draw() {
   if(mooseAlive){
   //move moose with perlin noise
   //mooseX = noise(xOff) * width
-  mooseY = noise(yOff) * height
+  mooseY = noise(yOff) * 600+400
   //xOff += 0.003 * speed;
   yOff += 0.005;
 
@@ -129,7 +129,7 @@ function draw() {
   mooseX -= speed;
   //mooseY += speed;
 
-  mooseShrink = 0.1*(mooseY-windowHeight);
+  mooseShrink = 0.2*(mooseY-windowHeight);
 
     if(mooseX < 0) mooseX = width + 1000;
   }
