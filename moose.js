@@ -26,6 +26,7 @@ let backgroundAudio;
 let footstepsAudio;
 let ampMeter = 0;
 let totalAcello = 0;
+let mooseCalled = false;
 
 function preload(){
   img = loadImage('assets/forest.jpg');
@@ -111,6 +112,7 @@ function touchStarted(){
   backgroundAudio.loop();
   footstepsAudio.loop();
   footstepsAudio.amp(0);
+  backgroundAudio.amp(1);
 
 }
 
@@ -118,10 +120,10 @@ function touchStarted(){
 function draw() {
 
   //movement
-  if(mooseAlive){
+  if(mooseAlive && mooseCalled){
   //move moose with perlin noise
   //mooseX = noise(xOff) * width
-  mooseY = noise(yOff) * 600+400
+  mooseY = noise(yOff) * 500+200
   //xOff += 0.003 * speed;
   yOff += 0.005;
 
@@ -140,9 +142,9 @@ function draw() {
   background(img)
 
   //draw moose
-  if(mooseAlive){image(mooseImg,mooseX,mooseY,mooseWidth+mooseShrink,mooseHeight+mooseShrink)}
+  if(mooseAlive && mooseCalled){image(mooseImg,mooseX,mooseY,mooseWidth+mooseShrink,mooseHeight+mooseShrink)}
 
-  else{image(deadImg,mooseX,mooseY,mooseWidth,mooseHeight)}
+  else if(!mooseAlive && mooseCalled){image(deadImg,mooseX,mooseY,mooseWidth,mooseHeight)}
 
   //draw aim
   
@@ -154,4 +156,12 @@ function draw() {
   ampMeter -= 180
   ampMeter = constrain(ampMeter,0,8000)
   console.log(Math.floor(ampMeter) + "\t\t\t\t" + totalAcello)
+}
+
+function keyPressed(){
+  if (keyCode === 77) {
+    console.log("active");
+    mooseCalled = true
+    mooseX = width + 300
+  }
 }
