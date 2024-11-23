@@ -21,12 +21,22 @@ let hasShot = false
 let mooseDead;
 let mooseAlive = true
 let deadImg
+let shaman;
 let mooseShrink = 0;
 let backgroundAudio;
 let footstepsAudio;
 let ampMeter = 0;
 let totalAcello = 0;
 let mooseCalled = false;
+let shamanX = -350
+
+let speak0, speak1, speak2, speak3, speak4, speak5
+let speaks
+
+
+
+let shamanActive = true;
+let speaking = false;
 
 function preload(){
   img = loadImage('assets/forest.jpg');
@@ -38,6 +48,10 @@ function preload(){
   mooseDead = loadSound("assets/mooseDead.wav")
   deadImg = loadImage('assets/dead.png')
   backgroundAudio = loadSound('assets/huntSoundScape.mp3')
+  shaman = loadImage('assets/shaman.png');
+
+  speak0 = loadSound('assets/testspeak.wav')
+  speaks = [speak0,speak1,speak2,speak3,speak4,speak5]
 }
 
 
@@ -91,6 +105,7 @@ function onMessage(message) {
     arrow.play()
     checkShot()
   }
+
 }
 
 function checkShot(){
@@ -113,6 +128,7 @@ function touchStarted(){
   footstepsAudio.loop();
   footstepsAudio.amp(0);
   backgroundAudio.amp(1);
+  playSpeak(0)
 
 }
 
@@ -141,6 +157,19 @@ function draw() {
 
   background(img)
 
+  
+  image(shaman,shamanX,height-400,350,350)
+  
+
+  if(speaking){
+    showShaman();
+  }
+  else{
+    hideShaman();
+  }
+
+  
+
   //draw moose
   if(mooseAlive && mooseCalled){image(mooseImg,mooseX,mooseY,mooseWidth+mooseShrink,mooseHeight+mooseShrink)}
 
@@ -159,9 +188,39 @@ function draw() {
 }
 
 function keyPressed(){
+  console.log(keyCode)
   if (keyCode === 77) {
-    console.log("active");
-    mooseCalled = true
-    mooseX = width + 300
+    activateMoose();
   }
+
+  if (keyCode === 83) {
+    checkShot();
+    playSpeak(0)
+  }
+}
+
+function showShaman(){
+  if(shamanX < 100){shamanX+=10}
+}
+
+function hideShaman(){
+  if(shamanX > -350){
+    shamanX-=10
+  }
+}
+
+function playSpeak(id){
+  if(!speaking){
+  speaking = true
+  console.log(speaks)
+  speaks[id].play()
+  speaks[id].onended(() => speaking = false)
+  }
+}
+
+function activateMoose(){
+  console.log("active");
+  mooseCalled = true
+  mooseX = width + 300
+  playSpeak(0)
 }
