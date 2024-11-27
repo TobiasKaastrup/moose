@@ -27,6 +27,10 @@ let footstepsAudio;
 let ampMeter = 0;
 let totalAcello = 0;
 let mooseCalled = false;
+let recognizer = null;
+let isListening = false;
+const url = "https://teachablemachine.withgoogle.com/models/YZVL1Z8o-/";
+
 
 function preload(){
   img = loadImage('assets/forest.jpg');
@@ -40,9 +44,30 @@ function preload(){
   backgroundAudio = loadSound('assets/huntSoundScape.mp3')
 }
 
+async function createModel() {
+  const checkpointURL = url + "model.json";
+  const metadataURL = url + "metadata.json";
+
+  const recognizer = speechCommands.create(
+      "BROWSER_FFT",
+      undefined,
+      checkpointURL,
+      metadataURL);
+
+  await recognizer.ensureModelLoaded();
+  return recognizer;
+}
+
+async function initializeAudio() {
+  if (!recognizer) {
+    recognizer = await createModel();
+  }
+}
 
 
-function setup() {
+
+
+async function setup() {
   createCanvas(windowWidth, windowHeight);
 
   background(img);
@@ -51,7 +76,31 @@ function setup() {
   noStroke();
 
   mooseY = height -300
+  await initializeAudio();
 }
+
+function startMooseCall() {
+  if (!isListening && recognizer) {
+    isListening = true;
+    recognizer.listen(result => {
+      const score = result.scores[1];
+      const percentage = (score * 100).toFixed(0);
+
+      if (percentage >= 80) {
+        mooseCalled = true;
+        mooseX = width + 300;
+        recognizer.stopListening();
+        isListening = false;
+      }
+    }, {
+      includeSpectrogram: true,
+      probabilityThreshold: 0.75,
+      invokeCallbackOnNoiseAndUnknown: true,
+      overlapFactor: 0.50
+    });
+  }
+}
+
 
 
 function onMessage(message) {
@@ -65,15 +114,15 @@ function onMessage(message) {
   let beta = message["beta"] * 2;
 
   let x = (alpha+180) % 360;
-  //map udvalgt spænd af gyroskopets alpha værdi til en position på canvas langs x-aksen 
+  //map udvalgt spænd af gyroskopets alpha værdi til en position på canvas langs x-aksen
   mappedX = map(x, 90, 270, 0, windowWidth);
   let y = beta + 180;
-  //map udvalgt spænd af gyroskopet beta værdi til en position på canvas langs y-aksen 
+  //map udvalgt spænd af gyroskopet beta værdi til en position på canvas langs y-aksen
   mappedY = map(y, 100, 220, windowHeight, 0);
 
   //calculate accelo
   totalAcello = Math.abs(message["x"])+Math.abs(message["y"])+Math.abs(message["z"])
-  
+
 
 
   // //change amp according to accelo
@@ -81,7 +130,7 @@ function onMessage(message) {
   ampMeter += totalAcello*0.4
   let mappedAmp = map(ampMeter, 0,8000,0,1)
   footstepsAudio.amp(mappedAmp)
-  
+
 
   //moove the moose faster when noise is made
   speed = 1.2 + mappedAmp*8
@@ -118,6 +167,7 @@ function touchStarted(){
 
 
 function draw() {
+  startMooseCall();
 
   //movement
   if(mooseAlive && mooseCalled){
@@ -147,21 +197,13 @@ function draw() {
   else if(!mooseAlive && mooseCalled){image(deadImg,mooseX,mooseY,mooseWidth,mooseHeight)}
 
   //draw aim
-  
+
   fill(255,0,0)
   image(aim,mappedX,mappedY,20,20)
 
   //turn down ampMeter
-  
+
   ampMeter -= 180
   ampMeter = constrain(ampMeter,0,8000)
   console.log(Math.floor(ampMeter) + "\t\t\t\t" + totalAcello)
-}
-
-function keyPressed(){
-  if (keyCode === 77) {
-    console.log("active");
-    mooseCalled = true
-    mooseX = width + 300
-  }
 }
