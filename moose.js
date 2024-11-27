@@ -38,7 +38,7 @@ let isListening = false;
 const url = "https://teachablemachine.withgoogle.com/models/YZVL1Z8o-/";
 
 function preload(){
-  img = loadImage('assets/forest.jpg');
+  img = loadImage('assets/forest2.avif');
   mooseImg = loadImage('assets/moose.png');
   forestAudio = loadSound('assets/nature.mp3');
   footstepsAudio = loadSound('assets/footsteps.mp3');
@@ -47,9 +47,14 @@ function preload(){
   mooseDead = loadSound("assets/mooseDead.wav")
   deadImg = loadImage('assets/dead.png')
   backgroundAudio = loadSound('assets/huntSoundScape.mp3')
-  shaman = loadImage('assets/shaman.png');
+  shaman = loadImage('assets/shaman4.png');
 
-  speak0 = loadSound('assets/testspeak.wav')
+  speak0 = loadSound('assets/speak0.mp3')
+  speak1 = loadSound('assets/speak1.mp3')
+  speak2 = loadSound('assets/speak2.mp3')
+  speak3 = loadSound('assets/speak3.mp3')
+  speak4 = loadSound('assets/speak4.mp3')
+  speak5 = loadSound('assets/speak5.mp3')
   speaks = [speak0,speak1,speak2,speak3,speak4,speak5]
 }
 
@@ -95,11 +100,8 @@ function startMooseCall() {
       const score = result.scores[1];
       const percentage = (score * 100).toFixed(0);
 
-      if (percentage >= 80) {
-        mooseCalled = true;
-        mooseX = width + 300;
-        recognizer.stopListening();
-        isListening = false;
+      if (percentage >= 80 && !speaking) {
+        activateMoose()
       }
     }, {
       includeSpectrogram: true,
@@ -142,7 +144,7 @@ function onMessage(message) {
 
 
   //moove the moose faster when noise is made
-  speed = 1.2 + mappedAmp*8
+  speed = 1.2 + mappedAmp*5
   }
 
   if(message["type"] == "shot"){
@@ -161,6 +163,10 @@ function checkShot(){
   if(xDif > 0 && xDif < 140 && yDif > 0 && yDif < 140 ){
     mooseDead.play()
     mooseAlive = false
+    setTimeout(() => playSpeak(5),1000)
+  }
+  else{
+    setTimeout(() => playSpeak(4),1000)
   }
 
 }
@@ -173,12 +179,13 @@ function touchStarted(){
   footstepsAudio.amp(0);
   backgroundAudio.amp(1);
   playSpeak(0)
+  startMooseCall();
 
 }
 
 
 function draw() {
-  startMooseCall();
+  
 
   //movement
   if(mooseAlive && mooseCalled){
@@ -202,9 +209,7 @@ function draw() {
 
   background(img)
 
-  
-  image(shaman,shamanX,height-400,350,350)
-  
+  image(shaman,shamanX,height-500,450,450)
 
   if(speaking){
     showShaman();
@@ -218,7 +223,7 @@ function draw() {
   //draw moose
   if(mooseAlive && mooseCalled){image(mooseImg,mooseX,mooseY,mooseWidth+mooseShrink,mooseHeight+mooseShrink)}
 
-  else if(!mooseAlive && mooseCalled){image(deadImg,mooseX,mooseY,mooseWidth,mooseHeight)}
+  else if(!mooseAlive && mooseCalled){image(deadImg,mooseX,mooseY,mooseWidth/2,mooseHeight/2)}
 
   //draw aim
 
@@ -234,10 +239,11 @@ function draw() {
 
 function keyPressed(){
   console.log(keyCode)
+  //M
   if (keyCode === 77) {
     activateMoose();
   }
-
+  //S
   if (keyCode === 83) {
     checkShot();
     playSpeak(0)
@@ -267,5 +273,7 @@ function activateMoose(){
   console.log("active");
   mooseCalled = true
   mooseX = width + 300
-  playSpeak(0)
+  playSpeak(3)
+  recognizer.stopListening();
+  isListening = false;
 }
