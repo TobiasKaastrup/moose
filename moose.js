@@ -52,7 +52,7 @@ function preload(){
   speak0 = loadSound('assets/speak0.mp3')
   speak1 = loadSound('assets/speak1.mp3')
   speak2 = loadSound('assets/speak2.mp3')
-  speak3 = loadSound('assets/speak3.mp3')
+  speak3 = loadSound('assets/speak3.m4a')
   speak4 = loadSound('assets/speak4.mp3')
   speak5 = loadSound('assets/speak5.mp3')
   speaks = [speak0,speak1,speak2,speak3,speak4,speak5]
@@ -126,10 +126,10 @@ function onMessage(message) {
 
   let x = (alpha+180) % 360;
   //map udvalgt spænd af gyroskopets alpha værdi til en position på canvas langs x-aksen
-  mappedX = map(x, 90, 270, 0, windowWidth);
+  mappedX = map(x, 160, 210, 0, windowWidth);
   let y = beta + 180;
   //map udvalgt spænd af gyroskopet beta værdi til en position på canvas langs y-aksen
-  mappedY = map(y, 100, 220, windowHeight, 0);
+  mappedY = map(y, 130, 190, windowHeight, 0);
 
   //calculate accelo
   totalAcello = Math.abs(message["x"])+Math.abs(message["y"])+Math.abs(message["z"])
@@ -191,7 +191,8 @@ function draw() {
   if(mooseAlive && mooseCalled){
   //move moose with perlin noise
   //mooseX = noise(xOff) * width
-  mooseY = noise(yOff) * 500+200
+  mooseY = noise(yOff) * 500+400
+
   //xOff += 0.003 * speed;
   yOff += 0.005;
 
@@ -218,7 +219,6 @@ function draw() {
     hideShaman();
   }
 
-  
 
   //draw moose
   if(mooseAlive && mooseCalled){image(mooseImg,mooseX,mooseY,mooseWidth+mooseShrink,mooseHeight+mooseShrink)}
@@ -234,7 +234,7 @@ function draw() {
 
   ampMeter -= 180
   ampMeter = constrain(ampMeter,0,8000)
-  console.log(Math.floor(ampMeter) + "\t\t\t\t" + totalAcello)
+  //console.log(Math.floor(ampMeter) + "\t\t\t\t" + totalAcello)
 }
 
 function keyPressed(){
@@ -271,9 +271,16 @@ function playSpeak(id){
 
 function activateMoose(){
   console.log("active");
-  mooseCalled = true
-  mooseX = width + 300
   playSpeak(3)
-  recognizer.stopListening();
-  isListening = false;
+
+  speaks[3].onended(()=> {
+    speaking = false
+    console.log('finished')
+    mooseCalled = true
+    mooseX = width + 300
+    recognizer.stopListening();
+    isListening = false;
+  })
+  
+  
 }
